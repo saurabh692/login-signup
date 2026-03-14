@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Notes</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+</head>
+<body>
+    <div class="notes-container">
+        <div class="header">
+            <h1>📝 My Notes</h1>
+            <a href="{% url 'add_note' %}" class="btn btn-primary">+ Add Note</a>
+        </div>
+
+        {% if notes %}
+            <div class="notes-grid">
+                {% for note in notes %}
+                    <div class="note-card {% if note.is_pinned %}pinned{% endif %}">
+                        <div class="note-header">
+                            <div class="pin-icon {% if note.is_pinned %}active{% endif %}" onclick="togglePin({{ note.id }})">
+                                📌
+                            </div>
+                            <button class="delete-btn" onclick="deleteNote({{ note.id }})" title="Delete note">✕</button>
+                        </div>
+                        
+                        <div class="note-content">
+                            <h3 class="note-title">{{ note.title }}</h3>
+                            <p class="note-text">{{ note.content }}</p>
+                        </div>
+                        
+                        <div class="note-footer">
+                            <small>{{ note.updated_at|date:"M d, Y H:i" }}</small>
+                            <a href="{% url 'edit_note' note.id %}" class="edit-link">Edit</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-notes">
+                <p>No notes yet. <a href="{% url 'add_note' %}">Create one</a></p>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function deleteNote(noteId) {
+            if (confirm('Are you sure you want to delete this note?')) {
+                fetch(`/notes/delete/${noteId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.querySelector(`[data-note-id="${noteId}"]`)?.closest('.note-card').remove();
+                        location.reload();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+
+        function togglePin(noteId) {
+            fetch(`/notes/pin/${noteId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    location.reload();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>
