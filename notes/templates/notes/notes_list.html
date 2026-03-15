@@ -10,8 +10,13 @@
 <body>
     <div class="notes-container">
         <div class="header">
-            <h1>📝 My Notes</h1>
-            <a href="{% url 'add_note' %}" class="btn btn-primary">+ Add Note</a>
+            <div class="header-left">
+                <h1>📝 My Notes</h1>
+            </div>
+            <div class="header-right">
+                <div class="date-time" id="dateTime"></div>
+                <a href="{% url 'add_note' %}" class="btn btn-primary">+ Add Note</a>
+            </div>
         </div>
 
         {% if notes %}
@@ -95,6 +100,27 @@
             }
             return cookieValue;
         }
+
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'short', 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            const dateTimeString = now.toLocaleDateString('en-US', options);
+            document.getElementById('dateTime').textContent = dateTimeString;
+        }
+
+        // Update on page load
+        updateDateTime();
+        // Update every second
+        setInterval(updateDateTime, 1000);
     </script>
 </body>
 </html>

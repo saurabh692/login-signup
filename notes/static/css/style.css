@@ -29,6 +29,32 @@ body {
   padding-bottom: 20px;
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.header-left h1 {
+  color: #333;
+  font-size: 2.5em;
+  margin: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.date-time {
+  color: #667eea;
+  font-size: 0.95em;
+  font-weight: 600;
+  white-space: nowrap;
+  min-width: 200px;
+  text-align: right;
+}
+
 .header h1 {
   color: #333;
   font-size: 2.5em;
